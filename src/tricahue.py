@@ -118,7 +118,12 @@ class XDC:
 
     def log_in_sbh(self):
         # SBH Login
-        if self.sbh_token is None:
+        if self.sbh_token:
+            response = requests.post(
+                f'{self.sbh_url}/login',
+                headers={'Accept': 'text/plain', 'X-Authorization': self.sbh_token}
+            )
+        elif self.sbh_user and self.sbh_pass:
             response = requests.post(
                 f'{self.sbh_url}/login',
                 headers={'Accept': 'text/plain'},
@@ -129,10 +134,7 @@ class XDC:
             )
             self.sbh_token = response.text
         else:
-            response = requests.post(
-                f'{self.sbh_url}/login',
-                headers={'Accept': 'text/plain', 'X-Authorization': self.sbh_token}
-            )
+            print("Unable to login to SynBioHub")
 
     def convert_to_sbol(self, sbol_version=2):
         excel2sbol.converter(file_path_in = self.input_excel_path, 
@@ -223,13 +225,20 @@ class XDC:
         
 
     def run(self):
+        print("Starting XDC run")
         self.initialize()
         self.log_in_fj()
         self.log_in_sbh()
-        self.convert_to_sbol()
-        self.generate_sbol_hash_map()
-        self.upload_to_fj()
-        self.upload_to_sbh()
+        if (self.sbh_token):
+            self.convert_to_sbol()
+            self.generate_sbol_hash_map()
+            sbh_url = self.upload_to_sbh()
+            if self.fj_token:
+                self.upload_to_fj()
+            print("XDC run complete")
+            return sbh_url
+        raise AttributeError(f'Unable to login to SynBioHub')
+
 
 
 class XDE:
