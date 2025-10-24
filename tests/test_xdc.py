@@ -86,7 +86,7 @@ class Test_XDC(unittest.TestCase):
                         headers={
                             'Accept': 'text/plain',
                             'X-authorization': sbh_token},)
-        assert response.status_code == 200
+        assert response.status_code == 200, f'Got response: {response.status_code}'
 
     @unittest.skip("chassis test")
     def test_chassis(self):
