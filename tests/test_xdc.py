@@ -6,8 +6,8 @@ import requests
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
-# fj_url = "charmmefj-api.synbiohub.org"
-fj_url = "127.0.0.1:8000"
+fj_url = "charmmefj-api.synbiohub.org"
+#fj_url = "127.0.0.1:8000"
 fj_user = "test"
 fj_pass = "test123"
 
