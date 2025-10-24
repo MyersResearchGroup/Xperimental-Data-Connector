@@ -16,7 +16,7 @@ sbh_user = "test@test.test"
 sbh_pass = "test123"
 sbh_collec = "XDC_package_test"
 
-test_file_path ='test_files'
+test_file_path ='tests/test_files'
 excel_path = os.path.join(test_file_path, 'Tricahue_v11.6b_Medias.xlsx')
 
 homespace = 'https://synbiohub.org/synbiotest'
