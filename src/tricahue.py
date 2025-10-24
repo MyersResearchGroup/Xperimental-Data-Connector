@@ -45,8 +45,10 @@ class XDC:
         token to authenticate with SynBioHub
     status : str
         status of the process
-    attachments : file[]
+    attachments : list of filenames and/or file objects
         other files to upload to SBH
+    attachTo : str
+        displayID of object to attach files to
     
     Methods
     -------
@@ -63,11 +65,11 @@ class XDC:
     upload_to_sbh()
         Uploads the SBOL file to SynBioHub
     upload_sbh_attachments()
-        Upload the attachments to the existing SBH 
+        Upload the attachments to the existing SBH
     run()
         Runs the entire process
     """
-    def __init__(self, input_excel_path, fj_url, fj_user, fj_pass, sbh_url, sbh_user, sbh_pass, sbh_collection, sbh_collection_description, sbh_overwrite, fj_overwrite, fj_token, sbh_token, homespace, attachments=None):
+    def __init__(self, input_excel_path, fj_url, fj_user, fj_pass, sbh_url, sbh_user, sbh_pass, sbh_collection, sbh_collection_description, sbh_overwrite, fj_overwrite, fj_token, sbh_token, homespace, attachments=None, attachTo=None):
         self.input_excel_path = input_excel_path
         self.fj_url = fj_url
         self.fj_user = fj_user
@@ -82,6 +84,7 @@ class XDC:
         self.fj_token = fj_token
         self.sbh_token = sbh_token
         self.attachments = attachments
+        self.attachTo = attachTo
         self.input_excel = pd.ExcelFile(self.input_excel_path)
         self.x2f = None
         self.sbol_doc = None
@@ -195,10 +198,6 @@ class XDC:
         #doc = sbol2.Document()
         doc.write(self.file_path_out2)
 
-        if self.sbh_overwrite:
-            sbh_overwrite = '1'
-        else:
-            sbh_overwrite = '0'
         # SBH file upload
         response = requests.post(
             f'{self.sbh_url}/submit',
@@ -229,23 +228,28 @@ class XDC:
         return f'{self.sbol_graph_uri}/{self.sbh_collection}/{self.sbh_collection}_collection/1'
 
     def upload_sbh_attachments(self):
+
         headers = {'Accept': 'text/plain', 'X-authorization': self.sbh_token}
+        self.version = '1'
+        upload_url = '/'.join(s.strip('/') for s in [self.sbh_url, 'user', self.sbh_user, self.sbh_collection, self.attachTo, self.version])
 
         for file in self.attachments:
             if isinstance(file, str):
                 with open(file, 'rb') as fobj:
                     upload_file = {'file': (os.path.basename(file), fobj)}
-                    resp = requests.post(f'{self.upload_url}/attach', headers=headers, files=upload_file)
-                    resp.raise_for_status()
-                    print(f'Uploaded attachment {upload_file["file"][0]}: {resp.status_code}')
+                    # print(upload_url)
+                    response = requests.post(f'{upload_url}/attach', headers=headers, files=upload_file)
+                    response.raise_for_status()
+                    print(f'Uploaded attachment {upload_file["file"][0]}: {response.status_code}')
             else:
                 # file-like objects
                 filename = getattr(file, 'filename', 'attachment')
                 fobj = getattr(file, 'stream', None) or getattr(file, 'file', None) or file
                 upload_file = {'file': (filename, fobj)}
-                resp = requests.post(f'{self.upload_url}/attach', headers=headers, files=upload_file)
-                resp.raise_for_status()
-                print(f'Uploaded attachment {upload_file["file"][0]}: {resp.status_code}')
+                # print(upload_url)
+                response = requests.post(f'{upload_url}/attach', headers=headers, files=upload_file)
+                response.raise_for_status()
+                print(f'Uploaded attachment {upload_file["file"][0]}: {response.status_code}')
         
     def run(self):
         print("Starting XDC run")
@@ -257,11 +261,11 @@ class XDC:
             self.generate_sbol_hash_map()
             if self.fj_token:
                 self.upload_to_fj()
-            self.upload_url = self.upload_to_sbh()
+            self.collection_url = self.upload_to_sbh()
             if self.attachments:
                 self.upload_sbh_attachments()
             print("XDC run complete")
-            return self.sbh_url
+            return self.collection_url
         raise AttributeError(f'Unable to login to SynBioHub')
 
 
