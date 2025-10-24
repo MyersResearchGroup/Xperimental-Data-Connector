@@ -1,10 +1,3 @@
-# Tricahue
-
-Welcome to the Tricahue repository, our Python package for experimental data and metadata standardization, upload to databases and connection for creating distributed datasets.
-
-<img src="https://github.com/Gonza10V/Tricahue/blob/main/images/tricahue_logo.jpeg#gh-light-mode-only" alt="LOICA logo" width="350"/>
-<img src="https://github.com/Gonza10V/Tricahue/blob/main/images/tricahue_logo.jpeg#gh-dark-mode-only" alt="LOICA night logo" width="350"/>
-
 
 ![PyPI - Version](https://img.shields.io/pypi/v/tricahue)
 ![gh-action badge](https://github.com/MyersResearchGroup/Tricahue/workflows/Python%20package/badge.svg)
