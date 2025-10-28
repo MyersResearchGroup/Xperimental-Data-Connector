@@ -69,7 +69,7 @@ class XDC:
     run()
         Runs the entire process
     """
-    def __init__(self, input_excel_path, fj_url, fj_user, fj_pass, sbh_url, sbh_user, sbh_pass, sbh_collection, sbh_collection_description, sbh_overwrite, fj_overwrite, fj_token, sbh_token, homespace, attachments=None, attachTo=None):
+    def __init__(self, input_excel_path, fj_url, fj_user, fj_pass, sbh_url, sbh_user, sbh_pass, sbh_collection, sbh_collection_description, sbh_overwrite, fj_overwrite, fj_token, sbh_token, homespace='https://example.org', attachments=None, attachTo=None):
         self.input_excel_path = input_excel_path
         self.fj_url = fj_url
         self.fj_user = fj_user
@@ -225,6 +225,7 @@ class XDC:
         # if response.text == "Successfully uploaded":
         #      success = True
         #self.status = "Uploaded to SynBioHub"
+        response.raise_for_status()
         return f'{self.sbol_graph_uri}/{self.sbh_collection}/{self.sbh_collection}_collection/1'
 
     def upload_sbh_attachments(self):
