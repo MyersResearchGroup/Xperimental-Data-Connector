@@ -8,8 +8,8 @@ import requests
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../src')))
 
 fj_url = "charmmefj-api.synbiohub.org"
-fj_user = "test"
-fj_pass = "test123"
+fj_user = None
+fj_pass = None
 
 sbh_url = "https://synbiohub.org"
 sbh_user = "synbiotest"
@@ -18,8 +18,6 @@ sbh_collec = "XDC_package_test"
 
 test_file_path ='test_files'
 excel_path = os.path.join(test_file_path, 'Tricahue_v11.6b_Medias.xlsx')
-
-homespace = 'https://synbiohub.org/synbiotest'
 
 fj_overwrite = 1
 sbh_overwrite = 1
@@ -55,6 +53,7 @@ class Test_XDC(unittest.TestCase):
             sbh_collection_description = filename + ' test collection description',
             sbh_overwrite = sbh_overwrite,
             fj_overwrite = fj_overwrite,
+            homespace = "https://example.org/", 
             fj_token = None, 
             sbh_token = None)
 
@@ -71,7 +70,7 @@ class Test_XDC(unittest.TestCase):
         assert response.status_code == 200, f'Got response: {response.status_code}'
 
     def test_chassis(self):
-        self.setup('Tricahue_v11.6b_Chassis', 'xlsm')
+        self.setup('Tricahue_v11.6b_Chassis', 'xlsx')
 
         sbh_url = self.xdc.run()
         print(sbh_url)

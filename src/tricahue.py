@@ -45,11 +45,9 @@ class XDC:
         token to authenticate with SynBioHub
     status : str
         status of the process
-    attachments : list of filenames and/or file objects
+    attachments : dict { str : filename or file object}
         other files to upload to SBH
-    attachTo : str
-        displayID of object to attach files to
-    
+
     Methods
     -------
     initialize()
@@ -232,9 +230,10 @@ class XDC:
 
         headers = {'Accept': 'text/plain', 'X-authorization': self.sbh_token}
         self.version = '1'
-        upload_url = '/'.join(s.strip('/') for s in [self.sbh_url, 'user', self.sbh_user, self.sbh_collection, self.attachTo, self.version])
 
-        for file in self.attachments:
+        for location, file in self.attachments.items():
+            upload_url = '/'.join(s.strip('/') for s in [self.sbh_url, 'user', self.sbh_user, self.sbh_collection, location, self.version])
+
             if isinstance(file, str):
                 with open(file, 'rb') as fobj:
                     upload_file = {'file': (os.path.basename(file), fobj)}
