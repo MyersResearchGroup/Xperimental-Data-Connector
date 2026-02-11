@@ -94,9 +94,10 @@ class XDC:
         self.sbol_hash_map = {}
 
     def initialize(self):
-        self.x2f = X2F(excel_path=self.input_excel_path,
-                    fj_url=self.fj_url, 
-                    overwrite=self.fj_overwrite)
+        # what happens if I comment this out
+        # self.x2f = X2F(excel_path=self.input_excel_path,
+        #               fj_url=self.fj_url, 
+        #               overwrite=self.fj_overwrite)
         if self.sbh_collection_description is None:
             self.sbh_collection_description = 'Collection of SBOL files uploaded from Tricahue'
         if self.sbol_doc is None:
@@ -105,6 +106,11 @@ class XDC:
             self.sbol_fj_doc = sbol2.Document()
         
     def log_in_fj(self):
+        if not self.fj_url:
+            print('No Flapjack URL provided')
+            self.fj_token = None
+            return
+        
         self.x2f = X2F(excel_path=self.input_excel_path, 
                     fj_url=self.fj_url, 
                     overwrite=self.fj_overwrite)
@@ -119,6 +125,7 @@ class XDC:
         
         else:
             print('Unable to authenticate into Flapjack')
+            self.fj_token = None
             #TODO check token validity
         
 
@@ -177,9 +184,10 @@ class XDC:
         self.x2f.sbol_hash_map = self.sbol_hash_map
         self.x2f.generate_sheets_to_object_mapping()
         self.x2f.index_skiprows = header_rows
-        # self.x2f.create_df()
+        self.x2f.create_df()
         # change to upload_object_in_sheets
-        self.x2f.upload_all() 
+        # self.x2f.upload_all() 
+        self.x2f.upload_objects_in_sheets()
 
 
     def upload_to_sbh(self):
@@ -304,7 +312,7 @@ class XDE:
     
         return result.group()
 
-    def generateSampleData(self, file_list, sheet_to_read_from,time_col_name, data_cols_offset=0): 
+    def generateSampleData(self, file_list, sheet_to_read_from, time_col_name, data_cols_offset=0): 
         num_assays = len(file_list) - 1
         file_name_list = []
 
@@ -524,7 +532,7 @@ class XDE:
 
         return
     
-    def extractData(self, file_list, sheet_to_read_from, time_col_name='Time', data_cols_offset=0, num_rows_btwn_data=0):
+    def run(self, file_list, sheet_to_read_from, time_col_name='Time', data_cols_offset=0, num_rows_btwn_data=0):
         """
         Full run; extracts data from the input excel files and writes it to the XDC sheet.
         """
