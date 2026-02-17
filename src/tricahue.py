@@ -150,6 +150,8 @@ class XDC:
             print("Unable to login to SynBioHub")
 
     def convert_to_sbol(self, sbol_version=2):
+        sbol2.Config.setOption(sbol2.ConfigOptions.SBOL_COMPLIANT_URIS, True)
+        sbol2.Config.setOption(sbol2.ConfigOptions.SBOL_TYPED_URIS, False)
         excel2sbol.converter(file_path_in = self.input_excel_path, 
                 file_path_out = self.file_path_out, homespace=self.homespace, sbol_version=sbol_version)
         doc = sbol2.Document()
